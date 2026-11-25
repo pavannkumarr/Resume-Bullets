@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pavan Kumar | Offline Text Studio V16</title>
+<style>
+:root{
+  --bg:#f5f7fb;--panel:#ffffff;--ink:#172033;--muted:#667085;--line:#e4e8f0;
+  --soft:#f8fafc;--primary:#4f46e5;--primary-2:#4338ca;--teal:#0f9f91;
+  --warn:#fff8e8;--success-bg:#ecfdf3;--success:#087443;
+  --shadow:0 10px 34px rgba(15,23,42,.07);--shadow-sm:0 4px 16px rgba(15,23,42,.05)
+}
+.dark{
+  --bg:#0f1420;--panel:#171d2b;--ink:#edf2f7;--muted:#9aa6ba;--line:#2a3447;
+  --soft:#111827;--primary:#8b84ff;--primary-2:#a39eff;--teal:#55d2c4;
+  --warn:#302818;--success-bg:#10261d;--success:#75ddb1;
+  --shadow:0 12px 34px rgba(0,0,0,.24);--shadow-sm:0 5px 18px rgba(0,0,0,.18)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.55 Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased
+}
+button,select,textarea,input{font-family:inherit}
+main{max-width:1160px;margin:auto;padding:26px 22px 46px}
+header{
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+  margin-bottom:22px;flex-wrap:wrap
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo{
+  width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#4f46e5,#0f9f91);
+  display:grid;place-items:center;color:#fff;font-weight:850;font-size:17px;
+  box-shadow:0 8px 22px rgba(79,70,229,.20)
+}
+h1{font-size:21px;line-height:1.15;margin:0;letter-spacing:-.25px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.small,.muted{color:var(--muted)}
+.toolbar,.actions,.meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.toolbar{font-size:12px}
+.panel{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:21px;margin:14px 0;box-shadow:var(--shadow)
+}
+.panel h2{font-size:16px;line-height:1.25;margin:0 0 5px;letter-spacing:-.1px}
+.panel p{margin:4px 0 13px;color:var(--muted);font-size:13px}
+textarea{
+  width:100%;min-height:285px;resize:vertical;border:1px solid var(--line);border-radius:13px;
+  padding:15px;background:var(--soft);color:var(--ink);font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+  outline:none;transition:border-color .15s,box-shadow .15s
+}
+textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(79,70,229,.09)}
+button,select{
+  border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--panel);
+  color:var(--ink);cursor:pointer;font:inherit;transition:background .14s,border-color .14s,transform .08s,box-shadow .14s
+}
+button:hover{border-color:var(--primary);box-shadow:var(--shadow-sm)}
+button:active{transform:translateY(1px)}
+button.primary{
+  background:var(--primary);border-color:var(--primary);color:#fff;font-weight:700;
+  box-shadow:0 5px 15px rgba(79,70,229,.18)
+}
+button.primary:hover{background:var(--primary-2);border-color:var(--primary-2)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.count{font-size:11px;color:var(--muted);margin:8px 0 14px}
+.statbar{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.chip{
+  font-size:11px;padding:5px 9px;border-radius:999px;background:var(--soft);
+  border:1px solid var(--line);color:var(--muted)
+}
+.notice{padding:11px 13px;border-radius:11px;background:var(--warn);margin:12px 0;color:var(--ink);font-size:12px}
+.experience{
+  border:1px solid var(--line);border-radius:16px;padding:17px;margin:13px 0;background:var(--panel);
+  box-shadow:var(--shadow-sm);transition:border-color .15s,box-shadow .15s,transform .12s
+}
+.experience:hover{border-color:#cfd5e3;box-shadow:0 8px 26px rgba(15,23,42,.07)}
+.dark .experience:hover{border-color:#3a465e}
+.exphead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.exphead h3{
+  font-size:11px;margin:0 0 7px;color:var(--muted);font-weight:750;
+  letter-spacing:.08em;text-transform:uppercase
+}
+.exp-meta-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:2px 0}
+.exp-meta-copy-text{
+  display:inline-block;border:0;background:transparent;color:var(--ink);padding:0;margin:0;
+  border-radius:5px;font:inherit;font-weight:750;cursor:pointer;text-align:left;line-height:1.35;
+  letter-spacing:-.1px
+}
+.exp-meta-copy-text:first-of-type{font-size:16px}
+.exp-meta-copy-text:hover{background:var(--soft);color:var(--primary);text-decoration:underline;text-underline-offset:3px}
+.exp-meta-copy-text.copied{color:var(--teal);text-decoration:none}
+.expmeta{font-size:12px;color:var(--muted);margin-top:7px}
+.exptext{
+  white-space:pre-wrap;font:13px/1.72 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+  background:var(--soft);padding:14px;border-radius:11px;margin:14px 0 12px;border:1px solid transparent
+}
+.actions{margin-top:2px}
+.actions button{font-size:12px}
+.review{border-top:1px solid var(--line);margin-top:14px;padding-top:14px}
+.reviewrow{
+  display:grid;grid-template-columns:22px 1fr 125px;gap:8px;align-items:start;
+  padding:8px 3px;border-bottom:1px solid var(--line)
+}
+.reviewrow input[type=checkbox]{margin-top:5px;accent-color:var(--primary)}
+.reviewrow input[type=text]{
+  width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;
+  background:var(--soft);color:var(--ink);font:13px/1.45 inherit
+}
+.kind{font-size:11px;color:var(--muted);text-align:right;padding-top:5px}
+.footer{
+  text-align:center;margin:24px auto 0;padding:14px;border:1px solid var(--line);
+  border-radius:16px;background:var(--panel);font-size:10px;letter-spacing:1px;color:var(--muted)
+}
+.footer em{display:block;letter-spacing:0;font-size:12px;margin-top:5px}
+.hidden{display:none!important}
+.progress{height:5px;background:var(--soft);border-radius:999px;overflow:hidden}
+.progress>div{
+  height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--teal));
+  transition:width .25s ease
+}
+.statusline{
+  display:flex;align-items:center;gap:8px;min-height:26px
+}
+.offline-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;box-shadow:0 0 0 4px rgba(15,159,145,.10)}
+.copyhint{font-size:10px;color:var(--muted);margin-top:3px}
+.section-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+kbd{
+  padding:2px 6px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;
+  background:var(--soft);font-size:10px;color:var(--muted)
+}
+@media(max-width:700px){
+  main{padding:16px 11px 30px}.panel{padding:15px}.exphead{display:block}
+  .section-tools{margin-top:10px}.reviewrow{grid-template-columns:22px 1fr}.kind{grid-column:2;text-align:left;padding:0}
+  textarea{min-height:240px}
+}
+
+/* V8.1 FUN MODE — visual-only animations; parser/workflow untouched. */
+.version-badge{display:inline-block;padding:3px 8px;border-radius:999px;background:linear-gradient(135deg,var(--primary),var(--teal));color:#fff;font-size:10px;letter-spacing:.04em;vertical-align:middle;animation:versionFloat 3s ease-in-out infinite}
+@keyframes versionFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(-1deg)}}
+.logo{position:relative;overflow:hidden;animation:logoBreath 4s ease-in-out infinite;transition:transform .25s ease,box-shadow .25s ease}
+.logo::after{content:"";position:absolute;inset:-70% -20%;background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);transform:translateX(-75%) rotate(10deg);animation:logoShine 5.5s ease-in-out infinite;pointer-events:none}
+.logo:hover{transform:rotate(-4deg) scale(1.08);box-shadow:0 12px 30px rgba(79,70,229,.32)}
+@keyframes logoBreath{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-1px) rotate(.5deg)}}
+@keyframes logoShine{0%,65%,100%{transform:translateX(-75%) rotate(10deg)}78%{transform:translateX(75%) rotate(10deg)}}
+.offline-dot{animation:offlinePulse 2s ease-in-out infinite}
+@keyframes offlinePulse{0%,100%{box-shadow:0 0 0 4px rgba(15,159,145,.10)}50%{box-shadow:0 0 0 8px rgba(15,159,145,.02)}}
+#process{position:relative;overflow:hidden;isolation:isolate}
+#process::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.25) 45%,transparent 65%);transform:translateX(-120%);transition:transform .45s ease;z-index:-1}
+#process:hover::before{transform:translateX(120%)}
+#process.processing{animation:processWiggle .45s ease-in-out}
+@keyframes processWiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px) rotate(-.4deg)}75%{transform:translateX(2px) rotate(.4deg)}}
+.progress>div{position:relative;overflow:hidden}
+.progress>div::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 9px,rgba(255,255,255,.22) 9px 18px);animation:progressStripes .7s linear infinite}
+@keyframes progressStripes{from{transform:translateX(0)}to{transform:translateX(18px)}}
+.experience{animation:cardPop .45s cubic-bezier(.2,.8,.2,1) both}
+.experience:nth-child(2){animation-delay:.06s}.experience:nth-child(3){animation-delay:.12s}.experience:nth-child(4){animation-delay:.18s}.experience:nth-child(5){animation-delay:.24s}.experience:nth-child(6){animation-delay:.30s}.experience:nth-child(7){animation-delay:.36s}.experience:nth-child(8){animation-delay:.42s}.experience:nth-child(9){animation-delay:.48s}.experience:nth-child(n+10){animation-delay:.54s}
+@keyframes cardPop{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.experience:hover{transform:translateY(-3px)}
+.chip{transition:transform .2s ease,background .2s ease,border-color .2s ease}.chip:hover{transform:translateY(-2px) rotate(-1deg)}
+.exp-meta-copy-text{transition:color .18s ease,background .18s ease,transform .18s ease}.exp-meta-copy-text:hover{transform:translateX(2px)}.exp-meta-copy-text.copied{animation:copyPop .35s ease}
+@keyframes copyPop{0%{transform:scale(1)}45%{transform:scale(1.06)}100%{transform:scale(1)}}
+.actions button{transition:transform .16s ease,box-shadow .16s ease,border-color .14s ease}.actions button:hover{transform:translateY(-1px)}.actions button:active{transform:translateY(1px) scale(.99)}
+#status.success .offline-dot{animation:successDot .65s ease}@keyframes successDot{0%{transform:scale(1)}35%{transform:scale(2.2)}100%{transform:scale(1)}}
+.fun-particle{position:fixed;z-index:9999;width:8px;height:8px;border-radius:2px;pointer-events:none;left:var(--x);top:var(--y);background:var(--c);animation:particleFly var(--d) cubic-bezier(.12,.7,.2,1) forwards}
+@keyframes particleFly{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(.25)}}
+.footer em{transition:transform .25s ease}.footer:hover em{transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+
+
+/* V8.2 — FULL FUN MODE. Visual effects only; parsing/workflow remain untouched. */
+:root{--mx:50%;--my:30%}
+body{position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-35%;z-index:-4;pointer-events:none;background:radial-gradient(circle at var(--mx) var(--my),rgba(99,102,241,.18),rgba(20,184,166,.08) 18%,transparent 42%),radial-gradient(circle at 15% 20%,rgba(236,72,153,.07),transparent 28%),radial-gradient(circle at 85% 75%,rgba(59,130,246,.07),transparent 30%);animation:auroraMove 12s ease-in-out infinite alternate}
+body::after{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:.22;background-image:linear-gradient(rgba(100,116,139,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(100,116,139,.12) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 78%);animation:gridDrift 16s linear infinite}
+@keyframes auroraMove{0%{transform:translate3d(-1%,0,0) scale(1)}100%{transform:translate3d(1%,2%,0) scale(1.06)}}
+@keyframes gridDrift{to{background-position:34px 34px}}
+main{position:relative}
+main::before,main::after{content:"";position:fixed;width:180px;height:180px;border-radius:50%;filter:blur(42px);opacity:.18;pointer-events:none;z-index:-2}
+main::before{left:-80px;top:25vh;background:#4f46e5;animation:orbOne 9s ease-in-out infinite}
+main::after{right:-80px;top:62vh;background:#0f9f91;animation:orbTwo 11s ease-in-out infinite}
+@keyframes orbOne{50%{transform:translate(70px,35px) scale(1.25)}}
+@keyframes orbTwo{50%{transform:translate(-60px,-45px) scale(.8)}}
+header{animation:headerDrop .65s cubic-bezier(.2,.9,.2,1) both}
+@keyframes headerDrop{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+.brand{transition:transform .35s cubic-bezier(.2,.8,.2,1)}.brand:hover{transform:translateX(4px)}
+.logo{animation:logoMega 4s ease-in-out infinite,logoHue 7s linear infinite;background:linear-gradient(135deg,#4f46e5,#0f9f91,#ec4899,#4f46e5);background-size:300% 300%}
+@keyframes logoMega{0%,100%{transform:translateY(0) rotate(0) scale(1)}25%{transform:translateY(-3px) rotate(-3deg) scale(1.03)}50%{transform:translateY(0) rotate(2deg) scale(1.06)}75%{transform:translateY(-2px) rotate(-1deg) scale(1.03)}}
+@keyframes logoHue{to{background-position:300% 50%}}
+.panel{position:relative;transform:translateZ(0);animation:panelIn .7s .08s cubic-bezier(.2,.8,.2,1) both}
+.panel::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,transparent 10%,rgba(99,102,241,.5),rgba(20,184,166,.5),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.5;animation:borderRun 7s linear infinite;pointer-events:none}
+@keyframes borderRun{to{filter:hue-rotate(360deg)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(22px) scale(.99)}to{opacity:1;transform:none}}
+.panel:hover{box-shadow:0 24px 80px rgba(15,23,42,.12),0 0 45px rgba(79,70,229,.06)}
+#source{transition:transform .25s ease,box-shadow .3s ease,border-color .25s ease}#source:focus{transform:scale(1.003);box-shadow:0 0 0 4px rgba(79,70,229,.08),0 18px 50px rgba(79,70,229,.08)}
+#process{box-shadow:0 12px 28px rgba(79,70,229,.18);animation:buttonFloat 3.4s ease-in-out infinite}
+#process:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 18px 42px rgba(79,70,229,.28)}#process:active{transform:translateY(1px) scale(.98)}
+@keyframes buttonFloat{0%,100%{box-shadow:0 12px 28px rgba(79,70,229,.18)}50%{box-shadow:0 18px 42px rgba(20,184,166,.22)}}
+.toolbar button{position:relative;overflow:hidden}.toolbar button::after,.actions button::after{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.65);transform:scale(0);opacity:0;left:50%;top:50%;pointer-events:none}.toolbar button:active::after,.actions button:active::after{animation:ripple .5s ease-out}@keyframes ripple{0%{transform:translate(-50%,-50%) scale(1);opacity:.5}100%{transform:translate(-50%,-50%) scale(18);opacity:0}}
+.experience{position:relative;transform-style:preserve-3d;transition:transform .35s ease,box-shadow .35s ease}.experience:hover{transform:translateY(-7px) rotateX(1deg) rotateY(-1deg);box-shadow:0 22px 55px rgba(15,23,42,.13)}
+.experience::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.15) 48%,transparent 60%);transform:translateX(-130%);pointer-events:none}.experience:hover::after{animation:cardShine .8s ease}@keyframes cardShine{to{transform:translateX(130%)}}
+.chip{position:relative;overflow:hidden}.chip:hover{box-shadow:0 6px 18px rgba(79,70,229,.12)}
+.stats .chip{animation:chipIn .5s cubic-bezier(.2,.8,.2,1) both}.stats .chip:nth-child(2){animation-delay:.08s}.stats .chip:nth-child(3){animation-delay:.16s}.stats .chip:nth-child(4){animation-delay:.24s}@keyframes chipIn{from{opacity:0;transform:translateY(8px) scale(.92)}to{opacity:1;transform:none}}
+#status{transition:transform .25s ease}#status.success{animation:statusCelebration .7s cubic-bezier(.2,.8,.2,1)}@keyframes statusCelebration{0%{transform:scale(1)}35%{transform:scale(1.04) rotate(-.4deg)}65%{transform:scale(.99) rotate(.2deg)}100%{transform:scale(1)}}
+.fun-particle{width:7px;height:7px;box-shadow:0 0 10px currentColor}.fun-particle:nth-child(3n){border-radius:50%}@keyframes particleFly{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}45%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot)) scale(.05)}}
+h1{transition:transform .25s ease;transform-origin:left center}h1:hover{animation:titleWobble .55s ease}@keyframes titleWobble{0%,100%{transform:rotate(0)}20%{transform:rotate(-1.5deg)}40%{transform:rotate(1.5deg)}60%{transform:rotate(-.8deg)}80%{transform:rotate(.5deg)}}
+@media (prefers-reduced-motion:reduce){body::before,body::after,main::before,main::after{animation:none!important}.logo,#process,header,.panel,.experience,.stats .chip,h1{animation:none!important}.experience:hover{transform:none!important}}
+
+/* V9.0 — cinematic DOM playground. Visual-only; parser/workflow untouched. */
+.fun-deck{
+ position:relative;height:190px;margin:0 0 14px;border:1px solid var(--line);border-radius:22px;overflow:hidden;
+ background:radial-gradient(circle at 50% 50%,rgba(99,102,241,.12),transparent 38%),linear-gradient(135deg,rgba(79,70,229,.06),rgba(15,159,145,.05));
+ box-shadow:var(--shadow);isolation:isolate;transform:translateZ(0);--parx:0px;--pary:0px
+}
+.fun-deck::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent 0 25%,rgba(99,102,241,.08),transparent 40 62%,rgba(20,184,166,.08),transparent 76%);animation:deckSpin 18s linear infinite;z-index:-2}
+.fun-deck::after{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(100,116,139,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(100,116,139,.09) 1px,transparent 1px);background-size:24px 24px;mask-image:linear-gradient(to bottom,transparent,black 20%,black 80%,transparent);animation:deckGrid 8s linear infinite;z-index:-1}
+@keyframes deckSpin{to{transform:rotate(360deg)}} @keyframes deckGrid{to{background-position:24px 24px}}
+.fun-card{position:absolute;will-change:transform;user-select:none;pointer-events:none;filter:drop-shadow(0 15px 24px rgba(15,23,42,.12))}
+.code-card{left:7%;top:28px;width:310px;padding:12px 15px;border-radius:15px;background:rgba(15,23,42,.90);color:#dbeafe;border:1px solid rgba(148,163,184,.2);transform:translate3d(var(--parx),var(--pary),0) rotate(-2deg);animation:codeFloat 5s ease-in-out infinite}
+.code-top{display:flex;align-items:center;gap:5px;font:10px ui-monospace,monospace;color:#94a3b8}.code-top span{width:7px;height:7px;border-radius:50%;background:#64748b}.code-top span:first-child{background:#f87171}.code-top span:nth-child(2){background:#facc15}.code-top span:nth-child(3){background:#4ade80}.code-top b{margin-left:7px;font-weight:500}
+.code-lines{margin-top:8px;font:11px/1.75 ui-monospace,monospace}.code-lines i{color:#c084fc;font-style:normal}.code-lines em{color:#67e8f9}.code-lines strong{color:#86efac}.code-lines u{color:#f9a8d4;text-decoration:none}
+@keyframes codeFloat{0%,100%{transform:translate3d(var(--parx),var(--pary),0) rotate(-2deg)}50%{transform:translate3d(calc(var(--parx) + 4px),calc(var(--pary) - 5px),0) rotate(0deg)}}
+.radar-card{left:42%;top:27px;width:130px;height:130px;border-radius:50%;border:1px solid rgba(99,102,241,.35);background:radial-gradient(circle,rgba(99,102,241,.12),transparent 64%);animation:radarFloat 4s ease-in-out infinite;transform:translate3d(var(--parx),var(--pary),0)}
+.radar{position:absolute;inset:18px;border-radius:50%;border:1px solid rgba(99,102,241,.35);overflow:hidden}.radar::before{content:"";position:absolute;left:50%;top:50%;width:55%;height:2px;transform-origin:left center;background:linear-gradient(90deg,rgba(20,184,166,0),rgba(20,184,166,.9));animation:sweep 2.2s linear infinite}.radar::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;left:68%;top:30%;background:#34d399;box-shadow:0 0 15px #34d399;animation:blip 2.2s linear infinite}
+.radar-label{position:absolute;left:0;right:0;bottom:-25px;text-align:center;font:9px ui-monospace,monospace;letter-spacing:2px;color:var(--muted)}
+@keyframes sweep{to{transform:rotate(360deg)}} @keyframes blip{0%,55%,100%{opacity:.2;transform:scale(.7)}62%{opacity:1;transform:scale(1.5)}} @keyframes radarFloat{0%,100%{transform:translate3d(var(--parx),var(--pary),0)}50%{transform:translate3d(calc(var(--parx) - 4px),calc(var(--pary) + 5px),0) rotate(2deg)}}
+.rocket-card{right:15%;top:23px;font-size:42px;animation:rocketCruise 5s cubic-bezier(.45,.05,.55,.95) infinite}.spark-card{right:7%;bottom:30px;font-size:32px;color:#fbbf24;text-shadow:0 0 20px rgba(251,191,36,.55);animation:sparkSpin 2.8s linear infinite}
+@keyframes rocketCruise{0%,100%{transform:translate3d(0,18px,0) rotate(-12deg)}50%{transform:translate3d(-18px,-13px,0) rotate(8deg)}} @keyframes sparkSpin{to{transform:rotate(360deg) scale(1.15)}}
+.terminal-card{right:28%;bottom:19px;padding:8px 12px;border-radius:10px;background:rgba(2,6,23,.9);color:#86efac;font:10px ui-monospace,monospace;border:1px solid rgba(134,239,172,.18);animation:terminalBlink 3.5s ease-in-out infinite}
+.terminal-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#64748b;margin-right:4px}.terminal-dot:first-child{background:#fb7185}.terminal-dot:nth-child(2){background:#facc15}.terminal-dot:nth-child(3){background:#4ade80}
+@keyframes terminalBlink{0%,100%{opacity:.72;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.ambient-star{position:absolute;width:var(--ss);height:var(--ss);border-radius:50%;background:currentColor;color:#c4b5fd;opacity:.2;animation:starTwinkle var(--sd) ease-in-out var(--delay) infinite}
+@keyframes starTwinkle{0%,100%{opacity:.08;transform:scale(.5)}50%{opacity:.8;transform:scale(1.6)}}
+.fun-deck.warp{animation:warpDeck .9s cubic-bezier(.2,.8,.2,1)}
+@keyframes warpDeck{0%{filter:none;transform:perspective(900px) rotateX(0) scale(1)}35%{filter:saturate(1.6) brightness(1.08);transform:perspective(900px) rotateX(2deg) scale(1.012)}100%{filter:none;transform:none}}
+@media(max-width:700px){.fun-deck{height:155px}.code-card{left:4%;width:260px;top:20px}.radar-card{right:4%;left:auto;top:22px;width:92px;height:92px}.radar{inset:12px}.rocket-card{font-size:28px;right:17%;bottom:13px}.terminal-card{display:none}.spark-card{font-size:23px;right:5%;bottom:18px}}
+@media(prefers-reduced-motion:reduce){.fun-deck::before,.fun-deck::after,.code-card,.radar-card,.rocket-card,.spark-card,.terminal-card,.ambient-star{animation:none!important}}
+
+
+/* V9.1 — cursor laboratory + color explosion layer. Visual-only. */
+
+@keyframes cursorRing{to{transform:rotate(360deg) scale(1.5);opacity:0}}
+@keyframes trailFade{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.05) translateY(8px)}}
+
+.v91-rainbow-bar{
+  position:fixed;left:0;right:0;top:0;height:3px;z-index:2147483645;
+  background:linear-gradient(90deg,#ff0080,#7928ca,#00d4ff,#00f5a0,#ffe600,#ff0080);
+  background-size:300% 100%;animation:rainbowFlow 3s linear infinite;
+  box-shadow:0 0 16px rgba(0,212,255,.8);
+}
+@keyframes rainbowFlow{to{background-position:300% 0}}
+
+.v91-color-wave{
+  position:absolute;width:220px;height:220px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,rgba(255,0,128,.0),rgba(0,212,255,.18),rgba(124,58,237,.2),rgba(255,230,0,.12),rgba(255,0,128,0));
+  filter:blur(25px);animation:colorWave 7s linear infinite;z-index:-1;
+}
+@keyframes colorWave{to{transform:rotate(360deg) scale(1.15)}}
+
+.v91-shimmer{
+  position:relative;overflow:hidden;
+}
+.v91-shimmer::before{
+  content:"";position:absolute;top:-30%;left:-80%;width:35%;height:160%;
+  transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent);
+  animation:shimmerSweep 4.2s ease-in-out infinite;pointer-events:none;
+}
+@keyframes shimmerSweep{0%,45%{left:-80%}70%,100%{left:140%}}
+
+.v91-neon-pulse{
+  animation:neonPulse 2.8s ease-in-out infinite;
+}
+@keyframes neonPulse{
+  0%,100%{filter:saturate(1);box-shadow:0 0 0 rgba(34,211,238,0)}
+  50%{filter:saturate(1.55);box-shadow:0 0 30px rgba(139,92,246,.18)}
+}
+
+.v91-rainbow-text{
+  background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6,#facc15,#34d399,#22d3ee);
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:textRainbow 5s linear infinite;
+}
+@keyframes textRainbow{to{background-position:300% 0}}
+
+@keyframes cardColorBurst{
+  0%{box-shadow:0 0 0 rgba(34,211,238,0)}
+  50%{box-shadow:0 0 45px rgba(139,92,246,.18),0 0 70px rgba(236,72,153,.10)}
+  100%{box-shadow:0 0 0 rgba(34,211,238,0)}
+}
+.experience.v91-enter{animation:cardColorBurst 1.2s ease-out}
+
+@media(prefers-reduced-motion:reduce){
+  #removed-cursor::after,}
+
+
+/* V11 — blue + teal cinematic aesthetic; lightweight, offline, parser untouched */
+:root{
+  --blue:#2563eb;--blue2:#1d4ed8;--cyan:#06b6d4;--teal:#0f9f91;
+  --navy:#0b1730;--ink:#13233f;--soft-blue:#eef7ff;--line-blue:#d6e7f7;
+}
+body{
+  background:
+    radial-gradient(circle at 10% 8%,rgba(37,99,235,.10),transparent 28%),
+    radial-gradient(circle at 88% 16%,rgba(6,182,212,.11),transparent 30%),
+    linear-gradient(135deg,#f7fbff 0%,#eef8fb 52%,#f8fbff 100%);
+}
+.dark{
+  --bg:#071426;--panel:#0c1d35;--ink:#e8f7ff;--muted:#91adc5;--line:#173653;--soft:#08192c;
+  --primary:#38bdf8;--primary-2:#22d3ee;--teal:#2dd4bf;
+  --shadow:0 12px 36px rgba(0,0,0,.34);--shadow-sm:0 6px 20px rgba(0,0,0,.28);
+}
+.dark body,body.dark{background:
+  radial-gradient(circle at 12% 8%,rgba(37,99,235,.16),transparent 28%),
+  radial-gradient(circle at 88% 16%,rgba(6,182,212,.13),transparent 30%),
+  linear-gradient(135deg,#061325 0%,#081b31 55%,#071426 100%);
+}
+.v11-topbar{height:4px;background:linear-gradient(90deg,#2563eb,#06b6d4,#14b8a6,#38bdf8,#2563eb);background-size:220% 100%;animation:v11Flow 7s linear infinite}
+.logo{background:linear-gradient(135deg,#2563eb,#06b6d4,#14b8a6)!important;box-shadow:0 8px 24px rgba(6,182,212,.24)!important}
+.version-badge{background:linear-gradient(135deg,#2563eb,#06b6d4,#14b8a6)!important}
+.panel{border-color:rgba(37,99,235,.16);box-shadow:0 12px 36px rgba(14,70,110,.08)}
+.experience{border-color:rgba(37,99,235,.15)!important}
+.experience:hover{border-color:rgba(6,182,212,.48)!important;box-shadow:0 14px 38px rgba(6,182,212,.13)}
+.chip{border-color:rgba(37,99,235,.14)!important;background:linear-gradient(180deg,var(--soft),rgba(6,182,212,.035))}
+button.primary{background:linear-gradient(135deg,#2563eb,#0891b2 55%,#0f9f91)!important;border-color:transparent!important;box-shadow:0 10px 28px rgba(37,99,235,.22)!important}
+button.primary:hover{box-shadow:0 14px 34px rgba(6,182,212,.27)!important}
+#process{animation:v11ButtonFloat 3.6s ease-in-out infinite}
+.offline-dot{background:#2dd4bf!important;box-shadow:0 0 0 4px rgba(45,212,191,.10)!important}
+.v11-rangoli{position:fixed;right:-120px;bottom:-150px;width:430px;height:430px;pointer-events:none;z-index:0;opacity:.13;background:radial-gradient(circle,transparent 0 28%,rgba(37,99,235,.25) 29% 29.6%,transparent 30.5% 38%,rgba(6,182,212,.23) 39% 39.7%,transparent 40.7% 48%,rgba(20,184,166,.20) 49% 49.7%,transparent 50.7%);transform:rotate(45deg);animation:v11Spin 55s linear infinite}
+.v11-wave{position:fixed;left:-10%;right:-10%;bottom:-100px;height:220px;pointer-events:none;z-index:0;opacity:.18;background:radial-gradient(ellipse at 50% 100%,rgba(6,182,212,.18),transparent 62%);animation:v11Wave 8s ease-in-out infinite}
+.v11-motif{position:fixed;width:8px;height:8px;border-radius:50%;background:#06b6d4;box-shadow:0 0 18px rgba(6,182,212,.55);pointer-events:none;z-index:0;animation:v11Pulse 2.8s ease-in-out infinite}
+.v11-motif.a{left:26px;top:92px}.v11-motif.b{right:38px;top:150px;animation-delay:1s}.v11-motif.c{left:48%;top:58px;animation-delay:1.7s}
+.v11-card-accent{position:relative;overflow:hidden}
+.v11-card-accent::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#2563eb,#06b6d4,#14b8a6,#2563eb);background-size:240% 100%;animation:v11Flow 8s linear infinite;opacity:.9}
+.v11-emoji{display:inline-block;animation:v11Emoji 3.2s ease-in-out infinite;transform-origin:50% 80%}
+.v11-emoji:nth-child(2){animation-delay:.3s}.v11-emoji:nth-child(3){animation-delay:.6s}
+@keyframes v11Flow{to{background-position:220% 0}}
+@keyframes v11Spin{to{transform:rotate(405deg)}}
+@keyframes v11Wave{0%,100%{transform:translateY(0) scaleX(1)}50%{transform:translateY(-12px) scaleX(1.03)}}
+@keyframes v11Pulse{0%,100%{transform:scale(.75);opacity:.35}50%{transform:scale(1.25);opacity:.9}}
+@keyframes v11Emoji{0%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(-4px) rotate(-5deg)}70%{transform:translateY(1px) rotate(4deg)}}
+@keyframes v11ButtonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+/* Full-screen cinematic transition effects */
+#v11-fx{position:fixed;inset:0;z-index:9999;pointer-events:none;display:grid;place-items:center;opacity:0;background:radial-gradient(circle at 50% 50%,rgba(6,182,212,.34),rgba(37,99,235,.16) 28%,rgba(4,15,30,.72) 78%);backdrop-filter:blur(1px)}
+#v11-fx.show{animation:v11ScreenFlash .9s cubic-bezier(.2,.8,.2,1) both}
+#v11-fx .fx-orb{width:110px;height:110px;border:2px solid rgba(125,240,255,.65);border-radius:50%;box-shadow:0 0 40px rgba(6,182,212,.55),inset 0 0 28px rgba(37,99,235,.32);transform:scale(.1);opacity:0}
+#v11-fx.show .fx-orb{animation:v11Orb .82s ease-out both}
+#v11-fx .fx-emoji{position:absolute;font-size:34px;opacity:0}
+#v11-fx.show .fx-emoji{animation:v11EmojiFly .85s cubic-bezier(.15,.8,.2,1) both}
+#v11-fx .e1{--x:-180px;--y:-95px}.e2{--x:180px;--y:-80px}.e3{--x:-150px;--y:100px}.e4{--x:160px;--y:110px}
+@keyframes v11ScreenFlash{0%{opacity:0;transform:scale(1)}14%{opacity:1}72%{opacity:1}100%{opacity:0;transform:scale(1.025)}}
+@keyframes v11Orb{0%{opacity:0;transform:scale(.1)}35%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(7)}}
+@keyframes v11EmojiFly{0%{opacity:0;transform:translate(0,0) scale(.4) rotate(-25deg)}20%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.25) rotate(25deg)}}
+@media(prefers-reduced-motion:reduce){.v11-topbar,.v11-rangoli,.v11-wave,.v11-motif,.v11-card-accent::before,.v11-emoji,#process{animation:none!important}#v11-fx{backdrop-filter:none} }
+
+/* V12 PDF-only local import */
+.pdf-import{margin:0 0 12px;border:1px dashed rgba(15,159,145,.55);border-radius:13px;background:linear-gradient(135deg,rgba(79,70,229,.045),rgba(15,159,145,.045));padding:12px 14px;transition:border-color .18s,background .18s,transform .18s,box-shadow .18s}
+.pdf-import.dragover{border-color:var(--teal);background:rgba(15,159,145,.10);box-shadow:0 0 0 4px rgba(15,159,145,.08);transform:translateY(-1px)}
+.pdf-import-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pdf-import-copy{display:flex;align-items:center;gap:10px;min-width:0}
+.pdf-import-icon{font-size:25px;filter:drop-shadow(0 3px 8px rgba(15,159,145,.18))}
+.pdf-import-copy strong{display:block;font-size:12px}.pdf-import-copy span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+#pdfFile{display:none}
+.pdf-file-name{font-size:11px;color:var(--teal);font-weight:700;margin-top:7px;display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pdf-import.busy .pdf-import-icon{animation:pdfSpin .8s linear infinite}
+@keyframes pdfSpin{to{transform:rotate(360deg)}}
+</style></head>
+<body>
+<div class="v11-topbar" aria-hidden="true"></div><div class="v11-rangoli" aria-hidden="true"></div><div class="v11-wave" aria-hidden="true"></div><span class="v11-motif a" aria-hidden="true"></span><span class="v11-motif b" aria-hidden="true"></span><span class="v11-motif c" aria-hidden="true"></span><div id="v11-fx" aria-hidden="true"><div class="fx-orb"></div><span class="fx-emoji e1">🚀</span><span class="fx-emoji e2">✨</span><span class="fx-emoji e3">😂</span><span class="fx-emoji e4">⚡</span></div><main>
+<header>
+<div class="brand"><div class="logo">PK</div><div><h1><span class="v11-emoji">🧪</span> Offline Text Studio <span class="small version-badge">V11</span></h1><div class="sub">One resume in. Separate experience results out. Fully offline.</div></div></div>
+<div class="toolbar"><span class="small statusline"><span class="offline-dot"></span>OFFLINE</span><span class="small" id="saveStatus">Local workspace ready</span><button id="theme">🌊 Dark mode</button><button id="reset">💣 Reset</button></div>
+</header>
+
+<section class="fun-deck" aria-hidden="true">
+  <div class="fun-orbit orbit-a"></div>
+  <div class="fun-orbit orbit-b"></div>
+  <div class="fun-orbit orbit-c"></div>
+  <div class="fun-card code-card">
+    <div class="code-top"><span></span><span></span><span></span><b>offline.engine</b></div>
+    <div class="code-lines"><i>const</i> resume = <em>paste()</em>;<br><i>while</i> (resume) { <strong>detect()</strong>; }<br><i>return</i> <u>experienceCards</u>;</div>
+  </div>
+  <div class="fun-card radar-card"><div class="radar"></div><span class="radar-label">PARSER ONLINE</span></div>
+  <div class="fun-card rocket-card">🚀</div>
+  <div class="fun-card spark-card">✦</div>
+  <div class="fun-card terminal-card">
+    <span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span>
+    <div>&gt; detecting roles... <b>100%</b></div>
+  </div>
+</section>
+
+<section class="panel v10-card-accent">
+<h2>Paste one complete resume</h2>
+<p>Paste the resume once. The tool automatically detects the work experience section, finds each role, and separates the responsibilities. No mode selection required. <span class="v11-emoji">😎</span></p>
+<div class="pdf-import" id="pdfDrop" tabindex="0" role="button" aria-label="Add PDF resume">
+  <input id="pdfFile" type="file" accept="application/pdf,.pdf">
+  <div class="pdf-import-inner">
+    <div class="pdf-import-copy"><div class="pdf-import-icon">📄</div><div><strong>Drop your PDF resume here</strong><span>PDF only · local PDF.js engine · no upload or network</span></div></div>
+    <button type="button" id="pdfBrowse">📂 Choose PDF</button>
+  </div>
+  <div class="pdf-file-name" id="pdfFileName"></div>
+</div>
+<textarea id="source" placeholder="Paste resume text here…"></textarea>
+<div class="count" id="count">0 words · 0 characters</div>
+<div class="actions"><button class="primary" id="process">🚀 Detect experiences & format</button><button id="clear">🧹 Clear input</button><button id="restore">🕵️ Restore last session</button><span class="small">Shortcut <kbd>Ctrl</kbd> + <kbd>Enter</kbd></span></div>
+<div class="progress" style="margin-top:14px"><div id="progress"></div></div>
+<div class="small statusline" id="status" style="margin-top:7px"><span class="offline-dot"></span>Ready. Your text stays on this device.</div>
+</section>
+<section class="panel v10-card-accent hidden" id="resultsPanel">
+<div class="exphead">
+  <div><h2>Detected experiences</h2><p id="summary">Review each experience and correct any uncertain line grouping.</p></div>
+  <div class="section-tools"><label class="small" for="symbol">Bullet</label><select id="symbol"><option>•</option><option>⦁</option><option>●</option><option>▪</option></select><label class="small" for="spacing">Spacing</label><select id="spacing"><option value="1">Blank line</option><option value="0">Compact</option></select></div>
+</div>
+<div id="warnings" class="notice hidden"></div>
+<div id="stats" class="statbar hidden"></div>
+<div id="cards"></div>
+</section>
+<section class="panel v10-card-accent"><div class="exphead"><div><h2>Recent results</h2><p>Stored locally in this browser.</p></div><button id="clearHistory">Clear history</button></div><div id="history" class="small">No recent results.</div></section>
+<footer class="footer">MADE WITH PURPOSE · BUILT FOR PRECISION<em>“Great work is often the result of small details, done right.”</em></footer>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const DB_NAME="OfflineTextStudioV7", DB_VERSION=1, HISTORY_KEY="offlineTextStudioV7History", PREF_KEY="offlineTextStudioV7Prefs";
+let experiences=[], lastRaw="", db=null, saveTimer=null;
+const bulletRE=/^[•⦁●▪◦‣*-]\s*/;
+const stopHead=/^(education|academic background|skills|technical skills|certifications?|licenses?|projects|volunteer experience|publications|awards|professional summary|summary|objective|references|languages|interests|additional information)$/i;
+function wordCount(t){return (t.trim().match(/\S+/g)||[]).length}
+function count(){let t=$("source").value;$("count").textContent=`${wordCount(t)} words · ${t.length} characters`}
+function normalizeLines(raw){return raw.replace(/\r\n?/g,"\n").replace(/\u00a0/g," ").split("\n").map(x=>x.replace(/[ \t]+$/,""))}
+function isSectionHeading(s){return stopHead.test(s.trim().replace(/:$/,""))}
+function isWorkHeading(s){return /^(work experience|professional experience|employment history|work history|career history|professional background|experience)$/i.test(s.trim().replace(/:$/,""))}
+function isDateLine(s){
+ const t=s.trim();
+ const year=/\b(?:19|20)\d{2}\b/.test(t), month=/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|janv(?:ier)?|févr(?:ier)?|fevr(?:ier)?|mars|avr(?:il)?|mai|juin|juil(?:let)?|août|aout|sept(?:embre)?|oct(?:obre)?|nov(?:embre)?|déc(?:embre)?|dec(?:embre)?)\b/i.test(t);
+ const range=/\b(?:19|20)\d{2}\s*[-–—to]+\s*(?:(?:19|20)\d{2}|present|current|now)\b/i.test(t)||/[-–—]\s*(?:present|current|now)\b/i.test(t);
+ const numeric=/\b\d{1,2}[\/.]\d{2,4}\s*[-–—]\s*(?:\d{1,2}[\/.]\d{2,4}|present|current)\b/i.test(t);
+ return (year&&(month||range))||numeric;
+}
+function likelyMeta(s){
+ const t=s.trim();if(!t)return true;
+ if(isWorkHeading(t)||isSectionHeading(t)||isDateLine(t))return true;
+ if(t.length<95&&/\b(inc\.?|llc|corp\.?|corporation|company|co\.?|ltd\.?|limited|gmbh|plc|university|college|hospital|healthcare|bank|technologies|solutions|systems|group|associates)\b/i.test(t)&&!/[.!?]$/.test(t))return true;
+ if(t.length<90&&/\b(manager|director|analyst|engineer|specialist|coordinator|consultant|administrator|supervisor|associate|executive|architect|developer|technician|officer|president|lead|intern|representative|nurse|therapist|professor|teacher|accountant|scientist|designer|strategist|advisor|adviser)\b/i.test(t)&&!/[.!?]$/.test(t))return true;
+ if(t.length<=65&&t===t.toUpperCase()&&/[A-Z]/.test(t)&&!/[.!?]$/.test(t))return true;
+ return false;
+}
+function findWorkRange(lines){
+ let start=-1,end=lines.length;
+ for(let i=0;i<lines.length;i++){if(isWorkHeading(lines[i])){start=i+1;break}}
+ if(start<0)return {start:0,end:lines.length,found:false};
+ for(let i=start;i<lines.length;i++){if(isSectionHeading(lines[i])){end=i;break}}
+ return {start,end,found:true};
+}
+function cleanLines(lines){return lines.map(x=>x.trim()).filter(Boolean)}
+function dateLineContainsHeaderText(s){
+ const t=s.trim();
+ if(!isDateLine(t)) return false;
+ const withoutDates=t
+   .replace(/\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\.?\b/ig," ")
+   .replace(/\b(?:19|20)\d{2}\b/g," ")
+   .replace(/\b(?:present|current|now)\b/ig," ")
+   .replace(/\b\d{1,2}[\/.]\d{2,4}\b/g," ")
+   .replace(/[-–—|,]/g," ").trim();
+ return withoutDates.length>4;
+}
+function detectEntries(lines, foundHeading){
+ // Find date anchors, including dates appended to a title (e.g. "Mainframe Application Developer 1991 - 2012").
+ const anchors=[];
+ lines.forEach((line,i)=>{if(isDateLine(line))anchors.push(i)});
+ if(!anchors.length) return [makeEntry("Experience 1","",lines)];
+ const starts=anchors.map(a=>{
+   if(dateLineContainsHeaderText(lines[a])) return a;
+   // Common company-first layout: Company / Title / Location / Date.
+   if(a>=1 && looksLocation(lines[a-1]) && a>=3) return a-3;
+   // Title / Company / Date or Company / Title / Date.
+   if(a>=2) return a-2;
+   return Math.max(0,a-1);
+ });
+ // A new date anchor starts a new position. This intentionally supports multiple roles at one employer.
+ const entries=[];
+ for(let k=0;k<anchors.length;k++){
+   let start=Math.max(0,starts[k]);
+   let end=k<starts.length-1?Math.max(start+1,starts[k+1]):lines.length;
+   // Prevent the preceding experience from consuming the next header.
+   if(k>0) start=Math.max(start,starts[k-1]+1);
+   const chunk=lines.slice(start,end);
+   const meaningful=chunk.filter(x=>x.trim()&&!isSectionHeading(x)&&!isWorkHeading(x));
+   if(meaningful.length) entries.push(makeEntry(`Experience ${entries.length+1}`,"",chunk));
+ }
+ // If multiple date anchors were actually repeated date fragments within one entry, merge tiny false fragments.
+ const cleaned=[];
+ for(const entry of entries){
+   const content=entry.rows.map(r=>r.text).join(" ").trim();
+   if(!content && cleaned.length){cleaned[cleaned.length-1].meta += " · "+entry.meta;continue}
+   cleaned.push(entry);
+ }
+ return cleaned.length?cleaned:[makeEntry("Experience 1","",lines)];
+}
+function looksLocation(s){let t=s.trim();return /,\s*[A-Z]{2}(?:\s+\d{5}(?:-\d{4})?)?$/.test(t)||/,\s*(?:USA|United States|Canada|UK|United Kingdom)$/i.test(t)||/^[A-Z][a-zA-Z .'-]+,\s*[A-Z][a-zA-Z .'-]+$/.test(t)}
+function looksCombinedExperienceHeader(s){
+ const t=s.trim();
+ if(t.length>220) return false;
+ const hasDate=isDateLine(t);
+ const hasRole=/\b(analyst|developer|engineer|manager|director|specialist|coordinator|consultant|administrator|supervisor|associate|executive|architect|technician|officer|representative|nurse|therapist|professor|teacher|accountant|scientist|designer|strategist|advisor|adviser|intern|lead|president)\b/i.test(t);
+ const hasSeparator=/\s[–—-]\s/.test(t)||/\s{2,}/.test(t);
+ // A compact single line containing role + employer + date is a header, not a duty.
+ return hasDate && (hasRole || hasSeparator);
+}
+function looksResponsibilityStart(s){
+ const t=s.trim().replace(bulletRE,"");
+ return bulletRE.test(s.trim()) ||
+ /^(set up|setup|lead|leading|managed|developed|created|built|led|supported|performed|implemented|coordinated|coordinating|maintained|designed|analyzed|analysed|provided|worked|conducted|improved|increased|reduced|delivered|collaborated|assisted|oversaw|executed|prepared|processed|established|utilized|ensured|handled|achieved|monitored|monitoring|generated|identified|streamlined|facilitated|supervised|administered|configured|deployed|architected|automated|reviewed|resolved|trained|organized|translated|communicated|partnered|evaluated|contributed|engaged|liaised|closed|launched|drove|owned|defined|produced|wrote|negotiated|secured|won|participation in|responsible for)\b/i.test(t);
+}
+function extractHeaderFields(header){
+ let company="",role="";
+ const roleRE=/\b(analyst|developer|engineer|manager|director|specialist|coordinator|consultant|administrator|supervisor|associate|executive|architect|technician|officer|representative|nurse|therapist|professor|teacher|accountant|scientist|designer|strategist|advisor|adviser|intern|lead|president|program manager|project manager|technical lead|software engineer|technology specialist)\b/i;
+ const usable=header.map(x=>x.trim()).filter(x=>x&&!isDateLine(x)&&!looksLocation(x));
+ if(!usable.length)return {company:"",role:""};
+ for(const x of usable){
+   if(roleRE.test(x) && !role) role=x;
+ }
+ if(usable.length===1){
+   const x=usable[0];
+   const m=x.match(/^(.*?)\s+[–—-]\s+(.*?)\s+(?=(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?|19\d{2}|20\d{2})\b)/i);
+   if(m){role=role||m[1].trim();company=m[2].trim();return {company,role};}
+   if(role){company=x.replace(role,"").replace(/[–—-]/g," ").trim();}
+   return {company:company||"",role:role||x};
+ }
+ if(role){
+   for(const x of usable){if(x!==role){company=x;break;}}
+ }else{
+   company=usable[0]||"";role=usable[1]||"";
+ }
+ return {company,role};
+}
+function makeEntry(name,meta,chunk){
+ const nonempty=chunk.map(x=>x.trim()).filter(Boolean);
+ let header=[], bodyStart=0;
+ // If there is no date/header metadata and the first line reads like a duty,
+ // treat the entire chunk as a single experience body. Do not let job-title
+ // keywords such as "lead" or "coordinator" steal responsibility lines.
+ const hasDateNearby=nonempty.slice(0,5).some(isDateLine);
+ const firstLooksLikeResponsibility=nonempty.length>0 &&
+   /^(set up|setup|lead|leading|managed|developed|created|built|led|supported|performed|implemented|coordinated|coordinating|maintained|designed|analyzed|analysed|provided|worked|conducted|improved|increased|reduced|delivered|collaborated|assisted|oversaw|executed|prepared|processed|established|utilized|ensured|handled|achieved|monitored|monitoring|generated|identified|streamlined|facilitated|supervised|administered|configured|deployed|architected|automated|reviewed|resolved|trained|organized|translated|communicated|partnered|evaluated|contributed|engaged|liaised|closed|launched|drove|owned|defined|produced|wrote|negotiated|secured|won|participation in|responsible for)\b/i.test(nonempty[0].replace(bulletRE,'').trim());
+ if(!hasDateNearby && firstLooksLikeResponsibility && !looksCombinedExperienceHeader(nonempty[0])){
+   bodyStart=0;
+ } else {
+ // A single-line header (e.g. "• Client Success Analyst – Customer Experience MetrixLab Oct 2020 - Aug 2021 Hyderabad, India")
+ // must never be treated as a responsibility.
+ while(bodyStart<nonempty.length && bodyStart<5){
+   const t=nonempty[bodyStart];
+   if(looksCombinedExperienceHeader(t)){header.push(t);bodyStart++;break}
+   if(isSectionHeading(t)||isWorkHeading(t)){bodyStart++;continue}
+   if(looksResponsibilityStart(t))break;
+   if(isDateLine(t)||looksLocation(t)||likelyMeta(t)){header.push(t);bodyStart++;continue}
+   // A short non-sentence line at the beginning is likely title/company metadata.
+   if(t.length<100&&!/[.!?]$/.test(t)&&!bulletRE.test(t)){header.push(t);bodyStart++;continue}
+   break;
+ }
+ // Consume adjacent metadata lines after a date/title header, but stop at the first responsibility.
+ if(hasDateNearby || bodyStart>0) while(bodyStart<nonempty.length && header.length<6){
+   const t=nonempty[bodyStart];
+   if(looksResponsibilityStart(t))break;
+   if(isDateLine(t)||looksLocation(t)||likelyMeta(t)||(t.length<100&&!/[.!?]$/.test(t)&&!bulletRE.test(t))){header.push(t);bodyStart++;continue}
+   break;
+ }
+ }
+ const metaText=header.join(" · ")||"Experience details not confidently identified";
+ let body=nonempty.slice(bodyStart);
+ const rows=classifyRows(body);
+ const fields=extractHeaderFields(header);
+ return {name,company:fields.company,role:fields.role,meta:metaText,rows,bullets:[],reviewNeeded:rows.some(r=>r.uncertain)};
+}
+function classifyRows(lines){
+ let rows=[],prev="";
+ for(let i=0;i<lines.length;i++){
+   let raw=lines[i].trim();if(!raw)continue;
+   let marked=bulletRE.test(raw),text=raw.replace(bulletRE,"").trim();
+   if(i===0 && looksCombinedExperienceHeader(raw)) continue;
+   let action=/^(set up|setup|lead|leading|managed|developed|created|built|led|supported|performed|implemented|coordinated|coordinating|maintained|designed|analyzed|analysed|provided|worked|conducted|improved|increased|reduced|delivered|collaborated|assisted|oversaw|executed|prepared|processed|established|utilized|ensured|handled|achieved|monitored|monitoring|generated|identified|streamlined|facilitated|supervised|administered|configured|deployed|architected|automated|reviewed|resolved|trained|organized|translated|communicated|partnered|evaluated|contributed|engaged|liaised|closed|launched|drove|owned|defined|produced|wrote|negotiated|secured|won|participation in|responsible for)\b/i.test(text);
+   // Do not let the generic PDF-wrap heuristic override a strong responsibility start.
+   // Example: a short line beginning with "Coordinating", "Increased", or "Monitoring"
+   // must remain a new bullet even when the preceding line has no punctuation.
+   let continuation=!marked&&!action&&!!prev&&(/^[a-z(]/.test(text)||(!/[.!?:;]$/.test(prev)&&text.length<110&&!likelyMeta(text)));
+   let bullet=marked||(!continuation&&!likelyMeta(text));
+   let uncertain=!marked&&!action&&!continuation&&text.length<55;
+   rows.push({text,bullet,uncertain,original:text});prev=text;
+ }
+ if(rows.length&&!rows[0].bullet)rows[0].bullet=true;
+ return rows;
+}
+function formatEntry(entry){
+ const sym=$("symbol").value, gap=Number($("spacing").value), out=[];
+ let last=-1;
+ entry.rows.forEach(r=>{let t=r.text.trim();if(!t)return;if(r.bullet){out.push(sym+" "+t);last=out.length-1}else if(last>=0)out[last]+=" "+t;else{out.push(sym+" "+t);last=out.length-1}});
+ return out.join(gap?"\n\n":"\n");
+}
+async function copyExactText(text, el){
+ const value=String(text||'').trim();
+ if(!value)return;
+ try{
+   if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);}
+   else{
+     const ta=document.createElement('textarea');ta.value=value;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+   }
+   const old=el.textContent;el.textContent='✓ Copied';el.classList.add('copied');
+   setTimeout(()=>{el.textContent=old;el.classList.remove('copied')},1000);
+ }catch(err){
+   const old=el.textContent;el.textContent='Copy failed';
+   setTimeout(()=>{el.textContent=old},1200);
+ }
+}
+function copyExperienceField(value,el){return copyExactText(value,el)}
+function processResume(){
+ const raw=$("source").value;if(!raw.trim()){alert("Paste one resume first.");return}
+ lastRaw=raw;$("status").innerHTML='<span class="offline-dot"></span>Analyzing resume…';$("progress").style.width="25%";
+ const lines=normalizeLines(raw),range=findWorkRange(lines),work=lines.slice(range.start,range.end);
+ const useful=cleanLines(work);
+ experiences=detectEntries(useful,range.found);
+ experiences.forEach(e=>e.output=formatEntry(e));
+ $("progress").style.width="100%";
+ const warnings=[];
+ if(!range.found)warnings.push("No clear Work Experience heading was found. V7 analyzed the pasted content as a whole; check that non-work sections were not included.");
+ if(experiences.length===1&&useful.length>0&&!useful.some(isDateLine))warnings.push("No recognizable employment date was found. The input is shown as one experience for manual review.");
+ if(experiences.some(e=>!e.rows.length))warnings.push("At least one experience has no detected responsibility lines.");
+ if(experiences.some(e=>e.reviewNeeded))warnings.push("Some lines are uncertain. Use Review & correct on those experiences.");
+ $("warnings").textContent=warnings.join(" ");$("warnings").classList.toggle("hidden",!warnings.length);
+ const totalBullets=experiences.reduce((n,e)=>n+e.rows.filter(r=>r.bullet).length,0);
+$("summary").textContent=`${experiences.length} experience${experiences.length===1?"":"s"} detected · ${totalBullets} planned bullet${totalBullets===1?"":"s"}. Review before copying.`;
+const stats=$("stats");
+stats.innerHTML="";
+[
+  `${experiences.length} EXPERIENCE${experiences.length===1?"":"S"}`,
+  `${totalBullets} RESPONSIBILIT${totalBullets===1?"Y":"IES"}`
+].forEach(t=>{const s=document.createElement("span");s.className="chip";s.textContent=t;stats.appendChild(s)});
+stats.classList.remove("hidden");
+ $("resultsPanel").classList.remove("hidden");renderCards();saveSession();saveHistory();
+ $("status").innerHTML=`<span class="offline-dot"></span>Finished · ${experiences.length} experience${experiences.length===1?"":"s"} detected.`; $("progress").style.width="100%";
+ $("resultsPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderCards(){
+ const root=$("cards");root.innerHTML="";
+ experiences.forEach((e,idx)=>{
+   const card=document.createElement("article");card.className="experience";
+   const head=document.createElement("div");head.className="exphead";
+   const title=document.createElement("div");
+   const h=document.createElement("h3");h.textContent=`Experience ${idx+1}`;
+
+   const companyRow=document.createElement("div");companyRow.className="exp-meta-row";
+   const companyLabel=document.createElement("button");companyLabel.type="button";companyLabel.className="exp-meta-copy-text";
+   companyLabel.textContent=e.company||"Company not identified";
+   companyLabel.title="Click to copy company name";
+   companyLabel.onclick=(ev)=>{ev.preventDefault();ev.stopPropagation();copyExactText(e.company,companyLabel)};
+   companyRow.append(companyLabel);
+
+   const roleRow=document.createElement("div");roleRow.className="exp-meta-row";
+   const roleLabel=document.createElement("button");roleLabel.type="button";roleLabel.className="exp-meta-copy-text";
+   roleLabel.textContent=e.role||"Role not identified";
+   roleLabel.title="Click to copy role name";
+   roleLabel.onclick=(ev)=>{ev.preventDefault();ev.stopPropagation();copyExactText(e.role,roleLabel)};
+   roleRow.append(roleLabel);
+
+   const meta=document.createElement("div");meta.className="expmeta";meta.textContent=e.meta;
+   title.append(h,companyRow,roleRow,meta);
+   const state=document.createElement("span");state.className="chip";state.textContent=e.rows.some(r=>r.uncertain&&!r.reviewed)?"Review suggested":"Ready to review";
+   head.append(title,state);
+
+   const preview=document.createElement("div");preview.className="exptext";preview.textContent=e.output;
+   const actions=document.createElement("div");actions.className="actions";
+   const copy=document.createElement("button");copy.className="primary";copy.textContent="Copy responsibilities";
+   copy.onclick=async()=>{e.output=formatEntry(e);preview.textContent=e.output;await copyExactText(e.output,copy)};
+   const edit=document.createElement("button");edit.textContent="Review & correct";
+   const review=document.createElement("div");review.className="review hidden";
+   edit.onclick=()=>{review.classList.toggle("hidden");if(!review.classList.contains("hidden"))renderReview(review,e,preview,state)};
+   actions.append(copy,edit);card.append(head,preview,actions,review);root.append(card);
+ });
+}
+function renderReview(root,e,preview,state){
+ root.innerHTML="<div class='small'>Tick a line to start a new bullet. Untick it to join it to the previous bullet. Edit any line before applying.</div>";
+ const inputs=[];
+ e.rows.forEach((r,i)=>{
+  const row=document.createElement("div");row.className="reviewrow";
+  const cb=document.createElement("input");cb.type="checkbox";cb.checked=r.bullet;
+  const input=document.createElement("input");input.type="text";input.value=r.text;
+  const kind=document.createElement("span");kind.className="kind";kind.textContent=r.uncertain&&!r.reviewed?"uncertain":r.bullet?"new bullet":"continuation";
+  cb.onchange=()=>{kind.textContent=cb.checked?"new bullet":"continuation"};
+  row.append(cb,input,kind);root.append(row);inputs.push({cb,input,r});
+ });
+ const bar=document.createElement("div");bar.className="actions";bar.style.marginTop="12px";
+ const apply=document.createElement("button");apply.className="primary";apply.textContent="Apply corrections";
+ apply.onclick=()=>{e.rows=inputs.map(x=>({...x.r,text:x.input.value.trim(),bullet:x.cb.checked,reviewed:true,uncertain:false})).filter(x=>x.text);e.output=formatEntry(e);preview.textContent=e.output;state.textContent="Reviewed";renderCards();saveSession()};
+ const cancel=document.createElement("button");cancel.textContent="Cancel";cancel.onclick=()=>root.classList.add("hidden");bar.append(apply,cancel);root.append(bar);
+}
+function openDB(){return new Promise((resolve,reject)=>{if(!("indexedDB" in window)){resolve(null);return}let req=indexedDB.open(DB_NAME,DB_VERSION);req.onupgradeneeded=()=>{let d=req.result;if(!d.objectStoreNames.contains("sessions"))d.createObjectStore("sessions",{keyPath:"id"});if(!d.objectStoreNames.contains("backups"))d.createObjectStore("backups",{keyPath:"id"});};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function saveSession(){try{if(!db)db=await openDB();const now=Date.now();const record={id:"latest",raw:$("source").value,experiences,updatedAt:now};if(db){await new Promise((res,rej)=>{let tx=db.transaction(["sessions","backups"],"readwrite");tx.objectStore("sessions").put(record);tx.objectStore("backups").put({id:"backup-"+now,raw:record.raw,experiences:record.experiences,updatedAt:now});tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});const all=await new Promise((res,rej)=>{let tx=db.transaction("backups","readonly"),q=tx.objectStore("backups").getAll();q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});all.sort((a,b)=>b.updatedAt-a.updatedAt).slice(5).forEach(x=>{let tx=db.transaction("backups","readwrite");tx.objectStore("backups").delete(x.id)});$("saveStatus").textContent="Saved + backup created · "+new Date(now).toLocaleTimeString()}else{localStorage.setItem("offlineTextStudioV7Fallback",JSON.stringify(record));$("saveStatus").textContent="Saved locally"}}catch(e){$("saveStatus").textContent="Save issue · export your text as backup"}}
+function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveSession,500)}
+async function restoreSession(){try{if(!db)db=await openDB();let rec;if(db)rec=await new Promise((res,rej)=>{let tx=db.transaction("sessions","readonly"),q=tx.objectStore("sessions").get("latest");q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});else rec=JSON.parse(localStorage.getItem("offlineTextStudioV7Fallback")||"null");if(!rec){$("status").textContent="No saved session found.";return} $("source").value=rec.raw||"";experiences=rec.experiences||[];lastRaw=rec.raw||"";count();if(experiences.length){$("resultsPanel").classList.remove("hidden");renderCards()}$("status").textContent="Last session restored."}catch(e){$("status").textContent="Could not restore saved session."}}
+function saveHistory(){try{let h=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");h.unshift({date:Date.now(),count:experiences.length,raw:$("source").value.slice(0,250),outputs:experiences.map(e=>e.output)});localStorage.setItem(HISTORY_KEY,JSON.stringify(h.slice(0,8)));renderHistory()}catch(e){}}
+function renderHistory(){try{let h=JSON.parse(localStorage.getItem(HISTORY_KEY)||"[]");$("history").textContent=h.length?h.map(x=>`${new Date(x.date).toLocaleString()} · ${x.count} experience(s)`).join("   |   "):"No recent results."}catch(e){$("history").textContent="No recent results."}}
+
+/* V12 PDF-only import — local text extraction, no network and no external dependency. */
+const pdfDrop=$('pdfDrop'),pdfFile=$('pdfFile'),pdfBrowse=$('pdfBrowse'),pdfFileName=$('pdfFileName');
+function pdfLatin1(bytes){let s='';const chunk=0x8000;for(let i=0;i<bytes.length;i+=chunk){s+=String.fromCharCode(...bytes.subarray(i,Math.min(i+chunk,bytes.length)))}return s}
+function pdfRefIds(s){const out=[];const re=/(\d+)\s+(\d+)\s+R/g;let m;while((m=re.exec(s)))out.push(m[1]+' '+m[2]);return out}
+function pdfObjectMap(bytes){const s=pdfLatin1(bytes),map=new Map();const re=/(\d+)\s+(\d+)\s+obj\s*/g;let m;while((m=re.exec(s))){const key=m[1]+' '+m[2],end=s.indexOf('endobj',re.lastIndex);if(end<0)break;map.set(key,{raw:s.slice(re.lastIndex,end)});re.lastIndex=end+6}return map}
+function pdfStreamBytes(obj){const raw=obj.raw,si=raw.indexOf('stream');if(si<0)return null;let p=si+6;if(raw[p]==='\r'&&raw[p+1]==='\n')p+=2;else if(raw[p]==='\n'||raw[p]==='\r')p++;const ei=raw.lastIndexOf('endstream');if(ei<0)return null;const head=raw.slice(0,si),lenM=/\/Length\s+(\d+)/.exec(head);let len=lenM?Number(lenM[1]):ei-p;return {head,bytes:Uint8Array.from(raw.slice(p,p+len),c=>c.charCodeAt(0)&255)}}
+async function pdfInflate(bytes){if(typeof DecompressionStream==='undefined')throw new Error('This browser does not support PDF decompression.');const ds=new DecompressionStream('deflate');const ab=await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();return new Uint8Array(ab)}
+async function pdfDecodeStreamData(st){let data=st.bytes;const h=st.head;if(/FlateDecode/.test(h))data=await pdfInflate(data);return data}
+async function pdfExpandObjectStreams(map){const entries=[...map.entries()];for(const [key,obj] of entries){if(!/\/Type\s*\/ObjStm\b/.test(obj.raw))continue;try{const st=pdfStreamBytes(obj);if(!st)continue;let data=await pdfDecodeStreamData(st);const str=pdfLatin1(data);const nm=/\/N\s+(\d+)/.exec(st.head),fm=/\/First\s+(\d+)/.exec(st.head);if(!nm||!fm)continue;const n=Number(nm[1]),first=Number(fm[1]);const header=str.slice(0,first);const nums=[];const nr=/\d+/g;let m;while((m=nr.exec(header))&&nums.length<n*2)nums.push(Number(m[0]));if(nums.length<n*2)continue;for(let i=0;i<n;i++){const objNum=nums[i*2],off=first+nums[i*2+1],next=i+1<n?first+nums[(i+1)*2+1]:data.length;if(off>=data.length||next<=off)continue;map.set(objNum+' 0',{raw:str.slice(off,next).trim()})}}catch(e){}}}
+
+function pdfDecodeHex(h){h=h.replace(/\s+/g,'');if(h.length%2)h+='0';const b=[];for(let i=0;i<h.length;i+=2)b.push(parseInt(h.slice(i,i+2),16));return pdfDecodeBytes(Uint8Array.from(b))}
+function pdfDecodeLiteral(x){let out=[];for(let i=1;i<x.length-1;i++){let c=x[i];if(c!=='\\'){out.push(c.charCodeAt(0));continue}i++;if(i>=x.length-1)break;let e=x[i];if(e==='n')out.push(10);else if(e==='r')out.push(13);else if(e==='t')out.push(9);else if(e==='b')out.push(8);else if(e==='f')out.push(12);else if(/[0-7]/.test(e)){let oct=e;while(oct.length<3&&i+1<x.length-1&&/[0-7]/.test(x[i+1]))oct+=x[++i];out.push(parseInt(oct,8))}else if(e==='\r'){if(x[i+1]==='\n')i++}else if(e!=='\n')out.push(e.charCodeAt(0));}return pdfDecodeBytes(Uint8Array.from(out))}
+function pdfDecodeBytes(bytes){if(bytes.length>=2&&bytes[0]===0xfe&&bytes[1]===0xff){let out='';for(let i=2;i+1<bytes.length;i+=2)out+=String.fromCharCode((bytes[i]<<8)|bytes[i+1]);return out}return new TextDecoder('windows-1252',{fatal:false}).decode(bytes)}
+function pdfStringTokens(s){const out=[];for(let i=0;i<s.length;){if(s[i]==='('){let j=i+1,d=1;while(j<s.length&&d){if(s[j]==='\\'){j+=2;continue}if(s[j]==='(')d++;else if(s[j]===')')d--;j++}if(!d){out.push(pdfDecodeLiteral(s.slice(i,j)));i=j;continue}}if(s[i]==='<'){let j=s[i+1]==='<'?i+2:i+1;while(j<s.length&&s[j]!=='>' )j++;if(s[j]==='>'){out.push(pdfDecodeHex(s.slice(i+1,j)));i=j+1;continue}}i++}return out}
+function pdfParseHexBytes(h){h=h.replace(/\s+/g,'');if(h.length%2)h+='0';const b=new Uint8Array(h.length/2);for(let i=0;i<b.length;i++)b[i]=parseInt(h.slice(i*2,i*2+2),16)||0;return b}
+function pdfLiteralBytes(x){const out=[];for(let i=1;i<x.length-1;i++){let c=x[i];if(c!=='\\'){out.push(c.charCodeAt(0)&255);continue}i++;if(i>=x.length-1)break;let e=x[i];if(e==='n')out.push(10);else if(e==='r')out.push(13);else if(e==='t')out.push(9);else if(e==='b')out.push(8);else if(e==='f')out.push(12);else if(/[0-7]/.test(e)){let oct=e;while(oct.length<3&&i+1<x.length-1&&/[0-7]/.test(x[i+1]))oct+=x[++i];out.push(parseInt(oct,8)&255)}else if(e==='\r'){if(x[i+1]==='\n')i++}else if(e!=='\n')out.push(e.charCodeAt(0)&255)}return Uint8Array.from(out)}
+function pdfTextStringTokens(s){const out=[];for(let i=0;i<s.length;){if(s[i]==='('){let j=i+1,d=1;while(j<s.length&&d){if(s[j]==='\\'){j+=2;continue}if(s[j]==='(')d++;else if(s[j]===')')d--;j++}if(!d){out.push({kind:'literal',bytes:pdfLiteralBytes(s.slice(i,j))});i=j;continue}}if(s[i]==='<'){if(s[i+1]==='<'){i+=2;continue}let j=i+1;while(j<s.length&&s[j]!=='>' )j++;if(s[j]==='>'){out.push({kind:'hex',bytes:pdfParseHexBytes(s.slice(i+1,j))});i=j+1;continue}}i++}return out}
+function pdfCMapHexValue(h){return parseInt(h.replace(/\s+/g,''),16)||0}
+function pdfParseToUnicode(cmap){const map=new Map(),codeLens=[];const cs=/begincodespacerange([\s\S]*?)endcodespacerange/gi;let m;while((m=cs.exec(cmap))){const r=/<([0-9A-Fa-f\s]+)>\s+<([0-9A-Fa-f\s]+)>/g;let x;while((x=r.exec(m[1])))codeLens.push((x[1].replace(/\s+/g,'').length/2))}const lens=[...new Set(codeLens)].sort((a,b)=>b-a);function dstText(h){const z=h.replace(/\s+/g,'');let out='';for(let i=0;i<z.length;i+=4){const n=parseInt(z.slice(i,i+4),16);if(!Number.isNaN(n))out+=String.fromCharCode(n)}return out}
+const bc=/beginbfchar([\s\S]*?)endbfchar/gi;while((m=bc.exec(cmap))){const r=/<([0-9A-Fa-f\s]+)>\s+<([0-9A-Fa-f\s]+)>/g;let x;while((x=r.exec(m[1])))map.set(pdfCMapHexValue(x[1]),dstText(x[2]))}
+const br=/beginbfrange([\s\S]*?)endbfrange/gi;while((m=br.exec(cmap))){const lines=m[1].match(/<[^>]+>\s+<[^>]+>\s+(?:<[^>]+>|\[[^\]]*\])/g)||[];for(const line of lines){const q=/<([0-9A-Fa-f\s]+)>\s+<([0-9A-Fa-f\s]+)>\s+(.+)$/.exec(line.trim());if(!q)continue;const a=pdfCMapHexValue(q[1]),b=pdfCMapHexValue(q[2]),d=q[3].trim();if(d[0]==='<'){const base=pdfCMapHexValue(d.replace(/[<>]/g,''));for(let k=0;k<=b-a;k++){let v=base+k;map.set(a+k,String.fromCharCode((v>>8)&255,v&255).replace(/\x00/g,''))}}else if(d[0]==='['){const vals=d.match(/<([^>]+)>/g)||[];for(let k=0;k<=b-a&&k<vals.length;k++)map.set(a+k,dstText(vals[k].slice(1,-1)))}}}
+return {map,lens:lens.length?lens:[1]}}
+function pdfDecodeWithCMap(bytes,cmap){if(!cmap)return pdfDecodeBytes(bytes);const lens=cmap.lens,map=cmap.map;let out='';for(let i=0;i<bytes.length;){let found=null;for(const n of lens){if(i+n<=bytes.length){let code=0;for(let j=0;j<n;j++)code=(code<<8)|bytes[i+j];if(map.has(code)){found={n,code};break}}}if(!found){found={n:lens[0],code:bytes[i]};if(i+found.n>bytes.length)found.n=1}out+=map.get(found.code)||String.fromCharCode(...bytes.slice(i,i+found.n));i+=found.n}return out}
+function pdfFontRefsFromPage(raw){const out=new Map();const fm=/\/Font\s*<<([\s\S]*?)>>/.exec(raw);if(!fm)return out;const r=/\/([A-Za-z0-9_.-]+)\s+(\d+)\s+(\d+)\s+R/g;let m;while((m=r.exec(fm[1])))out.set('/'+m[1],m[2]+' '+m[3]);return out}
+function pdfToUnicodeRef(fontRaw){const m=/\/ToUnicode\s+(\d+)\s+(\d+)\s+R/.exec(fontRaw);return m?m[1]+' '+m[2]:null}
+function pdfDecodeTextOps(content,fontMap){const blocks=[];const btRe=/BT([\s\S]*?)ET/g;let bm;while((bm=btRe.exec(content))){const b=bm[1];let fm=/\/([A-Za-z0-9_.-]+)\s+[-+]?\d*\.?\d+\s+Tf/.exec(b);const font=fm?'/'+fm[1]:null;const cmap=font&&fontMap.get(font)?fontMap.get(font).cmap:null;let tm=/([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+([-+]?\d*\.?\d+)\s+Tm/.exec(b);let x=tm?Number(tm[5]):0,y=tm?Number(tm[6]):0;const pieces=[];const tokRe=/(\((?:\\.|[^\\)])*\)|<[0-9A-Fa-f\s]+>)\s*Tj/g;let last=0,mm;while((mm=tokRe.exec(b))){const rawTok=mm[1],arr=pdfTextStringTokens(rawTok);if(arr.length)pieces.push(...arr.map(v=>pdfDecodeWithCMap(v.bytes,cmap)));last=tokRe.lastIndex}const arrRe=/\[([\s\S]*?)\]\s*TJ/g;while((mm=arrRe.exec(b))){for(const v of pdfTextStringTokens(mm[1]))pieces.push(pdfDecodeWithCMap(v.bytes,cmap))}let txt=pieces.join('').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,'');if(txt)blocks.push({x,y,text:txt})}if(!blocks.length)return '';blocks.sort((a,b)=>Math.abs(a.y-b.y)<0.5?a.x-b.x:a.y-b.y);const lines=[];for(const b of blocks){let line=lines.find(z=>Math.abs(z.y-b.y)<0.75);if(!line){line={y:b.y,x:b.x,text:b.text};lines.push(line)}else{if(b.x>line.x)line.text+=(line.text?' ':'')+b.text;else line.text=b.text+' '+line.text}}return lines.sort((a,b)=>a.y-b.y).map(l=>l.text.trim()).filter(Boolean).join('\n')}
+function pdfTextFromContent(s){let pieces=[],m,rx=/(\((?:\\.|[^\\)])*\)|<[0-9A-Fa-f\s]+>)\s*(Tj|['"])/g;while((m=rx.exec(s)))pieces.push(pdfStringTokens(m[1])[0]||'');const arr=/\[([\s\S]*?)\]\s*TJ/g;while((m=arr.exec(s)))pieces.push(...pdfStringTokens(m[1]));if(!pieces.length)return '';return pieces.join(' ').replace(/[ \t]+/g,' ').replace(/\s*([,.;:])\s*/g,'$1 ').trim()}
+function pdfEncodedGlyphScore(text){const common=['the','and','with','for','from','strategy','product','management','manager','marketing','finance','operations','business','customer','experience','revenue','growth','developed','managed','led','built','research','analyst','associate','university','skills','professional','technology','sales','account','partner','partnerships','consultant','director','senior','years','across','including','analysis','financial','market','data','project','leadership'];const words=(text.toLowerCase().match(/[a-z]+/g)||[]);if(!words.length)return 0;let hit=0;for(const w of words)if(common.includes(w))hit++;return hit/Math.max(1,words.length)}
+function pdfShiftGlyphText(text){const digitMap={0:'O',1:'P',2:'Q',3:'R',4:'S',5:'T',6:'U',7:'V',8:'W',9:'X'};return text.split(/(\s+)/).map(tok=>{if(/^\s+$/.test(tok))return tok;const hasLetter=/[A-Za-z]/.test(tok);if(!hasLetter)return tok;return tok.replace(/[A-Za-z0-9]/g,ch=>{if(ch>='A'&&ch<='Z')return String.fromCharCode(ch.charCodeAt(0)-1);if(ch>='a'&&ch<='z')return String.fromCharCode(ch.charCodeAt(0)-1);return digitMap[ch]||ch})}).join('')}
+function pdfMergeGlyphRuns(text){return text.replace(/(?:(?:\b[A-Za-z]\s+){3,}[A-Za-z]\b)/g,m=>m.replace(/\s+/g,''))}
+function pdfMergeKnownWords(text){const dict=new Set('the and for with from strategy partnerships professional experience across operations account management financial modeling execution fintech technology consumer industries experienced building business cases deal materials managing partner relationships translating data actionable plans track record leading cross-functional initiatives product finance marketing sales drive revenue growth profitability retention manager consultant product marketing strategy launch launches customer customers portfolio analysis analytics financial forecast forecasting pricing business market markets demand competitive positioning developed designed owned built led managed created delivered increased reduced improved established standardized research associate university master bachelor skills business administration technology innovation product management operations planning budgeting economics organization organizational stakeholders stakeholder project projects leadership sales enablement account accounts restaurant restaurants acquisition retention annual revenue margin margins investment investments cash position variance control controls reporting process improvement risk mitigation coordination education tools advanced excel powerpoint tableau python sql linkedin founder hospitality trade accounting equity research coverage client clients valuation models scenario analysis go-to-market target targets messaging playbooks roadmap roadmaps customer journeys cac ltv churn cohort performance a/b tests tests'.split(/\s+/));let out=[],toks=text.split(/(\s+)/);for(let i=0;i<toks.length;i++){let tok=toks[i];if(/^\s+$/.test(tok)){if(out.length&&i+1<toks.length){let a=String(out[out.length-1]),b=toks[i+1];if(/^[A-Za-z]+$/.test(a)&&/^[A-Za-z]+$/.test(b)&&dict.has((a+b).toLowerCase())){out.push('');continue}}out.push(tok);continue}if(out.length&&out[out.length-1]===''){out.pop();out[out.length-1]=String(out[out.length-1])+tok}else out.push(tok)}return out.join('')}
+function pdfFuzzyRepair(text){const dict=('manager strategy partnerships professional experience operations management financial marketing business customer customers revenue growth developed managed leadership technology sales account partner consultant director senior analyst associate university skills research product finance project planning forecasting pricing analysis analytics strategy operations').split(/\s+/);function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}return text.replace(/\b[A-Za-z]{5,}\b/g,w=>{let best=w,bd=2;for(const d of dict){if(Math.abs(d.length-w.length)>1)continue;const x=lev(w.toLowerCase(),d);if(x<bd){bd=x;best=d}}return bd===1&&w.length>=6?best:w})}
+function pdfNormalizeExtractedText(text){let t=text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g,' ');const shifted=pdfFuzzyRepair(pdfMergeKnownWords(pdfMergeGlyphRuns(pdfShiftGlyphText(t))));const before=pdfEncodedGlyphScore(t),after=pdfEncodedGlyphScore(shifted);if(after>Math.max(before+0.08,0.12))t=shifted;else t=pdfMergeGlyphRuns(t);return t.replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
+async function pdfExtractText(file){
+  // PDF.js is loaded from the local folder. No CDN or network request is used.
+  let pdfjs;
+  try { pdfjs = await import('./pdf.mjs'); }
+  catch (e) {
+    throw new Error('PDF.js was not loaded. Keep pdf.mjs and pdf.worker.mjs beside this HTML, then open the HTML through the included local server (not directly as file://).');
+  }
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL('./pdf.worker.mjs', location.href).href;
+  const data = new Uint8Array(await file.arrayBuffer());
+  const loadingTask = pdfjs.getDocument({
+    data,
+    useSystemFonts: true,
+    isEvalSupported: false,
+    enableXfa: true,
+    cMapUrl: './cmaps/',
+    cMapPacked: true,
+    standardFontDataUrl: './standard_fonts/'
+  });
+  let doc;
+  try { doc = await loadingTask.promise; }
+  catch (e) { throw new Error('PDF.js could not decode this PDF: ' + (e && e.message ? e.message : 'unknown PDF error')); }
+  const pages = [];
+  for (let pageNo=1; pageNo<=doc.numPages; pageNo++) {
+    const page = await doc.getPage(pageNo);
+    const content = await page.getTextContent({includeMarkedContent:false, disableNormalization:false});
+    const items = content.items.filter(x => x && typeof x.str === 'string');
+    const lines=[]; let current='', lastY=null, lastEndX=null;
+    for (const item of items) {
+      const str=item.str || '';
+      const tx=item.transform || [1,0,0,1,0,0];
+      const x=Number(tx[4])||0, y=Number(tx[5])||0;
+      const height=Math.abs(Number(tx[3])||Number(tx[0])||10);
+      const newLine = lastY!==null && Math.abs(y-lastY)>Math.max(2.2,height*.32);
+      if (newLine) { if(current.trim()) lines.push(current.trim()); current=''; lastEndX=null; }
+      if (str) {
+        if (current && lastEndX!==null && x-lastEndX>Math.max(1.5,height*.16) && !/\s$/.test(current) && !/^\s/.test(str)) current+=' ';
+        current+=str;
+      }
+      lastY=y;
+      lastEndX=x+(Number(item.width)||0);
+      if (item.hasEOL) { if(current.trim()) lines.push(current.trim()); current=''; lastY=null; lastEndX=null; }
+    }
+    if(current.trim()) lines.push(current.trim());
+    pages.push(lines.join('\n'));
+    page.cleanup();
+  }
+  // PDF.js v4+ exposes destroy() on the PDFDocumentLoadingTask, not
+  // consistently on the PDFDocumentProxy. Destroy the loading task instead.
+  if (loadingTask && typeof loadingTask.destroy === 'function') {
+    try { await loadingTask.destroy(); } catch (cleanupError) { /* extraction already completed */ }
+  }
+  const cleaned=pages.join('\n\n').replace(/[\t ]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+  if(!cleaned) throw new Error('No selectable text was found. This PDF may be scanned/image-only; OCR is not included yet.');
+  return cleaned;
+}
+async function loadPdf(file){if(!file||(!/application\/pdf/i.test(file.type)&&!/\.pdf$/i.test(file.name)))return;$('status').innerHTML='📄 Reading PDF locally…';pdfDrop.classList.add('busy');pdfFileName.style.display='block';pdfFileName.textContent='⏳ '+file.name;try{const text=await pdfExtractText(file);$('source').value=text;count();scheduleSave();pdfFileName.textContent='✅ '+file.name+' · '+wordCount(text)+' words extracted';$('status').innerHTML='📄 PDF text extracted locally. Check the text, then 🚀 Detect experiences.';screenFX('process')}catch(err){pdfFileName.textContent='⚠️ '+file.name+' · '+(err.message||'Could not extract text');$('status').innerHTML='⚠️ PDF text extraction needs a manual copy/paste for this file.'}finally{pdfDrop.classList.remove('busy')}}
+pdfBrowse.onclick=e=>{e.stopPropagation();pdfFile.click()};
+pdfDrop.onclick=e=>{if(e.target!==pdfBrowse)pdfFile.click()};
+pdfDrop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pdfFile.click()}};
+pdfFile.onchange=()=>loadPdf(pdfFile.files[0]);
+['dragenter','dragover'].forEach(ev=>pdfDrop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();pdfDrop.classList.add('dragover')}));
+['dragleave','drop'].forEach(ev=>pdfDrop.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();pdfDrop.classList.remove('dragover')}));
+pdfDrop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)loadPdf(f)});
+
+$("source").addEventListener("input",()=>{count();scheduleSave()});
+$("process").onclick=()=>{animateProcessButton();screenFX("process");processResume();setTimeout(()=>{if(experiences.length){celebrate();$("status").classList.add("success");setTimeout(()=>$("status").classList.remove("success"),800)}},120)};$("clear").onclick=()=>{if(!$("source").value.trim())return;$("source").value="";experiences=[];$("resultsPanel").classList.add("hidden");count();scheduleSave();$("status").textContent="Input cleared."};
+$("restore").onclick=restoreSession;$("clearHistory").onclick=()=>{localStorage.removeItem(HISTORY_KEY);renderHistory()};
+$("reset").onclick=()=>{if(confirm("Reset the current workspace? Your saved history stays safe.")){screenFX("reset");$("source").value="";experiences=[];$("resultsPanel").classList.add("hidden");count();scheduleSave();$("status").innerHTML="💥 Workspace reset. Fresh canvas unlocked."}};
+$("theme").onclick=()=>{document.documentElement.classList.toggle("dark");let dark=document.documentElement.classList.contains("dark");$("theme").textContent=dark?"☀️ Light mode":"🌙 Dark mode";localStorage.setItem(PREF_KEY,dark?"dark":"light")};
+$("symbol").onchange=()=>{experiences.forEach(e=>e.output=formatEntry(e));renderCards();scheduleSave()};
+$("spacing").onchange=()=>{experiences.forEach(e=>e.output=formatEntry(e));renderCards();scheduleSave()};
+document.addEventListener("DOMContentLoaded",()=>{if(localStorage.getItem(PREF_KEY)==="dark"){document.documentElement.classList.add("dark");$("theme").textContent="☀️ Light mode"}renderHistory();count();restoreSession()});
+
+
+
+
+
+/* V8.1 visual extras — isolated from parser/formatting logic. */
+function celebrate(){
+ const colors=["#4f46e5","#0f9f91","#f59e0b","#ec4899","#22c55e","#38bdf8"];
+ const origin=document.querySelector("#process")?.getBoundingClientRect(); if(!origin)return;
+ const x=origin.left+origin.width*.52,y=origin.top+origin.height*.45;
+ for(let i=0;i<24;i++){
+  const p=document.createElement("span"),a=(Math.PI*2*i/24)+(Math.random()-.5)*.35,d=55+Math.random()*105;
+  p.className="fun-particle";p.style.setProperty("--x",x+"px");p.style.setProperty("--y",y+"px");
+  p.style.setProperty("--dx",Math.cos(a)*d+"px");p.style.setProperty("--dy",(Math.sin(a)*d-35)+"px");
+  p.style.setProperty("--rot",(Math.random()*540-270)+"deg");p.style.setProperty("--d",(550+Math.random()*500)+"ms");p.style.setProperty("--c",colors[i%colors.length]);
+  document.body.appendChild(p);setTimeout(()=>p.remove(),1200);
+ }
+}
+function screenFX(mode){
+ const fx=document.getElementById("v11-fx"); if(!fx)return;
+ fx.dataset.mode=mode||"process"; fx.classList.remove("show"); void fx.offsetWidth; fx.classList.add("show");
+ setTimeout(()=>fx.classList.remove("show"),950);
+}
+
+function animateProcessButton(){const b=$("process");if(!b)return;b.classList.remove("processing");void b.offsetWidth;b.classList.add("processing");setTimeout(()=>b.classList.remove("processing"),500)}
+
+
+document.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){
+    e.preventDefault();
+    const b=$("process");
+    if(b&&!b.disabled)b.click();
+  }
+  if(e.key==="Escape"){
+    document.querySelectorAll(".review:not(.hidden)").forEach(x=>x.classList.add("hidden"));
+  }
+});
+
+
+
+
+
+
+</script></body></html>
